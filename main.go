@@ -64,8 +64,8 @@ func main() {
 	fmt.Println("Got ci_user: ", ci_user, " ci_token:", ci_token)
 
 	r := gin.Default()
-	r.GET("/", func(c *gin.Context) {
-		urls := c.DefaultQuery("urls", "")
+	r.NoRoute(func(c *gin.Context) {
+		urls := strings.TrimPrefix(c.Request.URL.Path, "/")
 		if len(urls) == 0 {
 			c.JSON(200, gin.H{
 				"message": "urls empty",
