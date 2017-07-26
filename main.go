@@ -1,12 +1,15 @@
 package main
 
-import "fmt"
-import "github.com/gin-gonic/gin"
-import "strings"
-import "net/http"
-import "io/ioutil"
-import "encoding/json"
-import "os"
+import (
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"strings"
+)
 
 func callJob(url string, crumb string) {
 	req, err := http.NewRequest("POST", url, nil)
@@ -69,10 +72,20 @@ func main() {
 			})
 			return
 		}
+		urls_data, err := base64.StdEncoding.DecodeString(urls)
+		if err != nil {
+			fmt.Println("urls decode base64 failed")
+			fmt.Println("failed:", err)
+			return
+		}
 
-		url_arr := strings.Split(urls, "|")
-		firstUrl := url_arr[0]
-		if strings.Contains(firstUrl, "/job/") == false {
+		fmt.Println("Decoded urls data", string(urls_data))
+		url_arr := strings.Split(string(urls_data), "|")
+		fmt.Println("url_arr->", url_arr)
+		first_url := url_arr[0]
+		fmt.Println("first_url->", first_url)
+
+		if strings.Contains(first_url, "/job/") == false {
 			c.JSON(200, gin.H{
 				"message": "job url not valid",
 			})
@@ -80,10 +93,10 @@ func main() {
 
 		}
 
-		fua := strings.Split(firstUrl, "/job/")
+		fua := strings.Split(first_url, "/job/")
 
 		crurl := fua[0] + "/crumbIssuer/api/json"
-		fmt.Println("crumb url %s", crurl)
+		fmt.Println("crumb url", crurl)
 		req, err := http.NewRequest("GET", crurl, nil)
 		if err != nil {
 			c.JSON(412, gin.H{
