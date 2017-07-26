@@ -12,3 +12,7 @@ put config.json to working directory of jk-build-go
 please see config.json.dist
 
 then run jk-build-go
+
+## copyright
+
+All rights reserved by netroby
