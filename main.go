@@ -14,6 +14,7 @@ func callJob(url string, crumb string) {
 		fmt.Println("Failed to call job : ", url)
 		return
 	}
+	fmt.Println("ci_user:", ci_user, " ci_token", ci_token)
 	req.SetBasicAuth(ci_user, ci_token)
 	req.Header.Add("Jenkins-Crumb", crumb)
 
@@ -23,8 +24,8 @@ func callJob(url string, crumb string) {
 }
 
 var (
-	ci_user  = ""
-	ci_token = ""
+	ci_user  string
+	ci_token string
 )
 
 func main() {
@@ -55,8 +56,8 @@ func main() {
 	}
 	config := cf.(map[string]interface{})
 
-	ci_user := config["ci_user"].(string)
-	ci_token := config["ci_token"].(string)
+	ci_user = config["ci_user"].(string)
+	ci_token = config["ci_token"].(string)
 	fmt.Println("Got ci_user: ", ci_user, " ci_token:", ci_token)
 
 	r := gin.Default()
