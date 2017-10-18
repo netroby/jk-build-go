@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 )
@@ -93,16 +94,21 @@ func main() {
 
 		}
 
-		fua := strings.Split(first_url, "/job/")
+		u, err := url.Parse(first_url)
+		if err != nil {
+			c.JSON(412, gin.H{
+				"message": fmt.Sprintf("%s", err),
+			})
+			return
+		}
 
-		crurl := fua[0] + "/crumbIssuer/api/json"
+		crurl := u.Scheme + "://" + u.Host + "/crumbIssuer/api/json"
 		fmt.Println("crumb url", crurl)
 		req, err := http.NewRequest("GET", crurl, nil)
 		if err != nil {
 			c.JSON(412, gin.H{
 				"message": "Failed to got crumb",
 			})
-
 			return
 		}
 		req.SetBasicAuth(ci_user, ci_token)
